@@ -1,0 +1,79 @@
+services:
+#  patient-service-db:
+#    container_name: patient-service-db
+#    image: postgres:latest
+#    ports:
+#      - 5432:5432
+#    environment:
+#      - POSTGRES_USER=user
+#      - POSTGRES_PASSWORD=password
+#      - POSTGRES_DB=patient-db
+#    volumes:
+#      - ../docker-volumes:/var/lib/postgresql/data
+#    networks:
+#      - internal
+#
+#  patient-service:
+#    container_name: patient-service
+#    image: mantichanouar/patient-service
+#    ports:
+#      - 8080:8080
+#    environment:
+#      - SPRING_DATASOURCE_URL:jdbc:postgresql://patient-service-db:5432/patient-db
+#      - SPRING_PASSWORD:password
+#      - SPRING_USERNAME:user\
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO:update
+#      - SPRING_SQL_INIT_MODE:always
+#      - BILLING_SERVICE_ADDRESS:billing-service
+#      - BILLING_SERVICE_GRPC_PORT:9001
+#    networks:
+#      - internal
+#    depends_on:
+#      - patient-service-db
+#
+#  billing-service:
+#    container_name: billing-service
+#    image: mantichanouar/billing-service
+#    ports:
+#      - 8081:8081
+#      - 9001:9001
+#    networks:
+#      - internal
+#    depends_on:
+#      - patient-service
+
+  kafka:
+    container_name: kafka
+    image: bitnami/kafka:latest
+    ports:
+      - 9092:9092     # Internal listener for other containers
+      - 9093:9093     # Controller listener
+      - 9094:9094     # External listener for host access
+    environment:
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+    networks:
+      - internal
+
+  auth-service-db:
+    container_name: auth-service-db
+    image: postgres:latest
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=auth-db
+    volumes:
+      - ./docker-volumes/auth-db:/var/lib/postgresql/data
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: internal

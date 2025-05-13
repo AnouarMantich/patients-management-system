@@ -1,0 +1,18 @@
+services:
+  auth-service:
+    container_name: auth-service
+    image: mantichanouar/auth-service
+    ports:
+      - 8084:8084
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-service-db:5432/auth-db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_SQL_INIT_MODE=always
+      - JWT_SECRET=i0lgoMNy7cpjcXjDV9KIyI+dBgyVlZbccPX2JaGKLOinoP/6rsr56S5elhKpICXr
+    networks:
+      - internal
+networks:
+  internal:
+    name: internal

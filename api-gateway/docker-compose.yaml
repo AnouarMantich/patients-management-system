@@ -1,0 +1,13 @@
+services:
+  api-gateway:
+    container_name: api-gateway
+    image: mantichanouar/api-gateway
+    ports:
+      - "8083:8083"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8084
+    networks:
+      - internal
+networks:
+  internal:
+    name: internal
